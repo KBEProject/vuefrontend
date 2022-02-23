@@ -41,16 +41,16 @@
 
     <table id="convertData">
       <tr id="tableHeader">
-        <td>Coin</td>
-        <td>Quantity</td>
-        <td>Prize</td>
-        <td>Date</td>
+        <td><b>Coin</b> </td>
+        <td><b>Quantity</b> </td>
+        <td><b>Prize</b> </td>
+        <td><b>Date</b> </td>
       </tr>
       <tr v-for="(conversion, index) in conversions" :key="index">
-        <td>{{ conversion.name }}</td>
+        <td>{{ conversion.currencyName }}</td>
         <td>{{ conversion.coinvalue }}</td>
         <td>{{ conversion.usdvalue }}</td>
-        <td>{{ conversion.nonce }}</td>
+        <td>{{ conversion.date }}</td>
       </tr>
     </table>
 
@@ -67,7 +67,8 @@
 <script>
 import axios from "axios";
 
-const baseURL = "http://localhost:8083/conversions";
+const convBaseURL = "http://localhost:8083/conversions";
+
 export default {
   name: "Home",
   components: {},
@@ -85,15 +86,16 @@ export default {
   methods: {
     add: async function () {
       if (this.dollar == 0 && this.coinvalue == 0) {
+        alert("Both values are empty!")
         return;
       }
       this.buttonOff = true;
       let date = new Date();
       const res = await axios
-        .post(baseURL + "/insert", {
-          userId: "default",
-          nonce: date.getDay()+"."+date.getMonth()+"."+date.getFullYear(),
-          name: this.coinSymbol,
+        .post(convBaseURL+ "/insert", {
+          user: localStorage.getItem("email"),
+          date: date.getDay()+"."+date.getMonth()+"."+date.getFullYear(),
+          currencyName: this.coinSymbol,
           usdvalue: this.dollar,
           coinvalue: this.coinvalue,
         })
@@ -103,14 +105,16 @@ export default {
 
       this.buttonOff = false;
 
-      console.log(res.data);
+      console.log(res);
+
+      this.updateConversions()
     },
     updateConversions: async function () {
-      const res = await axios.get(baseURL + "/findAll");
+      const res = await axios.get(convBaseURL + "/findConversionOfUser", {params: {user: localStorage.getItem("email")}});
       this.conversions = res.data;
     },
     deleteAll: async function () {
-      const res = await axios.delete(baseURL + "/deleteAll");
+      const res = await axios.delete(convBaseURL + "/deleteAll");
       this.conversions = res.data;
     },
   },
@@ -118,8 +122,9 @@ export default {
   mounted() {
     this.updateConversions();
   },
-  beforeUpdate() {
+  Update() {
     this.$nextTick(function () {
+      console.log("hey")
       this.updateConversions();
     });
   },
@@ -193,15 +198,21 @@ table {
 
 table tr td {
   font-weight: 100px;
+  padding-bottom: 15px;
 }
+
+
 
 td {
   padding: 5px 0;
 }
 .input {
+  font-size: 130%;
+  padding: 0px;
   width: 500px;
   height: 60px;
-  margin-left: 12px;
+  margin-left: 55px;
+ 
 }
 .input::placeholder {
   transition: color 0.3s ease;
@@ -213,9 +224,11 @@ td {
 }
 
 .dropMenu {
+  position: absolute;
+  right: 395px;
+  top: 220px;
   width: 50px;
   height: 60px;
-  margin-left: 988px;
   border-style: none;
   outline: none;
   background-color: transparent;
