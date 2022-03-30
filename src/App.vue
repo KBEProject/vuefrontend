@@ -37,7 +37,6 @@ export default {
     }
   },
   mounted() {  
-      console.log("HEYHEYHEY")
       this.loggedIn = localStorage.getItem("loggedIn") 
   },
 

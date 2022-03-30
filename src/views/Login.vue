@@ -26,7 +26,7 @@
       name="Login"
       value="Login"
       id="loginButton"
-      v-on:click="login"
+      v-on:click="handleLogin"
     />
   </div>
   <p id="toRegister" v-on:click="toRegister">Don't have an Account ?</p>
@@ -35,7 +35,7 @@
 <script>
 import axios from "axios";
 
-const userBaseURL = "http://localhost:8084/user";
+const userBaseURL = "http://localhost:8081/user";
 export default {
   name: "Login",
   data() {
@@ -49,7 +49,7 @@ export default {
       this.$router.push("/register");
     },
 
-    login: function () {
+    handleLogin: function () {
       axios
         .get(userBaseURL + "/login", {
           params: { email: this.email, password: this.password },

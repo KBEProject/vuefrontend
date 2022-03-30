@@ -39,7 +39,7 @@
 
 <script>
 import axios from "axios";
-const userBaseURL = "http://localhost:8084/user";
+const userBaseURL = "http://localhost:8081/user";
 
 export default {
   name: "Register",

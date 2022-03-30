@@ -43,7 +43,7 @@
       <tr id="tableHeader">
         <td><b>Coin</b> </td>
         <td><b>Quantity</b> </td>
-        <td><b>Prize</b> </td>
+        <td><b>Price</b> </td>
         <td><b>Date</b> </td>
       </tr>
       <tr v-for="(conversion, index) in conversions" :key="index">
@@ -67,7 +67,7 @@
 <script>
 import axios from "axios";
 
-const convBaseURL = "http://localhost:8083/conversions";
+const convBaseURL = "http://localhost:8081";
 
 export default {
   name: "Home",
@@ -78,7 +78,7 @@ export default {
       dollar: "",
       coinvalue: "",
       coinSymbol: "btc",
-      currentPrize: "",
+      currentPrice: "",
       conversions: [],
       buttonOff: false,
     };
@@ -92,9 +92,9 @@ export default {
       this.buttonOff = true;
       let date = new Date();
       const res = await axios
-        .post(convBaseURL+ "/insert", {
-          user: localStorage.getItem("email"),
-          date: date.getDay()+"."+date.getMonth()+"."+date.getFullYear(),
+        .post(convBaseURL+ "/conversions/insert", {
+          email: localStorage.getItem("email"),
+          date: date.toDateString(),
           currencyName: this.coinSymbol,
           usdvalue: this.dollar,
           coinvalue: this.coinvalue,
@@ -110,11 +110,11 @@ export default {
       this.updateConversions()
     },
     updateConversions: async function () {
-      const res = await axios.get(convBaseURL + "/findConversionOfUser", {params: {user: localStorage.getItem("email")}});
+      const res = await axios.get(convBaseURL + "/conversions/findConversionsOfUser", {params: {email: localStorage.getItem("email")}});
       this.conversions = res.data;
     },
     deleteAll: async function () {
-      const res = await axios.delete(convBaseURL + "/deleteAll");
+      const res = await axios.delete(convBaseURL + "/conversions/deleteAllUserConversions", {params: {email: localStorage.getItem("email")}});
       this.conversions = res.data;
     },
   },
@@ -124,7 +124,6 @@ export default {
   },
   Update() {
     this.$nextTick(function () {
-      console.log("hey")
       this.updateConversions();
     });
   },
@@ -181,6 +180,7 @@ div {
 table {
   border-collapse: separate;
   border-spacing: 150px 0;
+  border-style: solid;
   background-color: rgb(245, 245, 245);
   width: 70vw;
   height: auto;
@@ -211,7 +211,7 @@ td {
   padding: 0px;
   width: 500px;
   height: 60px;
-  margin-left: 55px;
+  margin-left: 120px;
  
 }
 .input::placeholder {
@@ -225,8 +225,8 @@ td {
 
 .dropMenu {
   position: absolute;
-  right: 395px;
-  top: 220px;
+  right: 563px;
+  top: 255px;
   width: 50px;
   height: 60px;
   border-style: none;
